@@ -3,14 +3,13 @@
 
 const int spiCSPin = 10;
 const int ledPin = 2;
-boolean ledON = 1;
 
 mcp2515_can CAN(spiCSPin);
 
 void setup()
 {
     Serial.begin(115200);
-    pinMode(ledPin,OUTPUT);
+    pinMode(ledPin, OUTPUT);
 
     while (CAN_OK != CAN.begin(CAN_500KBPS))
     {
@@ -40,19 +39,16 @@ void loop()
         {
             Serial.print(buf[i]);
             Serial.print("\t");
-            if(ledON && i==0)
-            {
-
-                digitalWrite(ledPin, buf[i]);
-                ledON = 0;
-                delay(500);
-            }
-            else if((!(ledON)) && i==4)
-            {
-
-                digitalWrite(ledPin, buf[i]);
-                ledON = 1;
-            }
+            
+        }
+        if(buf[7]<20)
+        {
+          int pwm = 255-buf[7]*12;
+          analogWrite(ledPin, pwm);
+          Serial.print(pwm);
+        }else
+        {
+          analogWrite(ledPin, 0);
         }
         Serial.println();
     }
